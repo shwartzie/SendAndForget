@@ -25,6 +25,14 @@
                     android:name="android.app.lib_name"
                     android:value=""/>
         </activity>
+        <activity
+                android:name=".login_activity"
+                android:label="Login Activity">
+        </activity>
+        <activity
+                android:name=".HomePage"
+                android:label="Login Activity">
+        </activity>
     </application>
 
 </manifest>
