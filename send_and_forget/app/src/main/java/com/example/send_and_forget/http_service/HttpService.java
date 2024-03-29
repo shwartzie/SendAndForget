@@ -21,7 +21,10 @@ public class HttpService {
 
     private HttpService() {
         // Private constructor to prevent instantiation
+//        String this::baseUrl = "http://localhost:3030/";
+
     }
+
 
     public static synchronized HttpService getInstance() {
         if (instance == null) {
@@ -31,11 +34,11 @@ public class HttpService {
     }
 
     public interface HttpCallback {
-        void onSuccess(String response);
+        void onSuccess(HttpResponse response) throws JSONException;
         void onFailure(int statusCode, String message);
     }
 
-    public void sendRequest(String url, String method, JSONObject requestBody, HttpCallback callback) {
+    public static void sendRequest(String url, String method, JSONObject requestBody, HttpCallback callback) {
 
         new HttpRequestTask(url, method, requestBody, callback).execute();
     }
@@ -96,7 +99,11 @@ public class HttpService {
         @Override
         protected void onPostExecute(HttpResponse httpResponse) {
             if (httpResponse.getCode() == HttpURLConnection.HTTP_OK) {
-                callback.onSuccess(httpResponse.getData());
+                try {
+                    callback.onSuccess(httpResponse);
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
             } else {
                 callback.onFailure(httpResponse.getCode(), httpResponse.getMessage());
             }

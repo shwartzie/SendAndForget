@@ -30,7 +30,7 @@
                 android:label="Login Activity">
         </activity>
         <activity
-                android:name=".HomePage"
+                android:name=".controller"
                 android:label="Login Activity">
         </activity>
     </application>

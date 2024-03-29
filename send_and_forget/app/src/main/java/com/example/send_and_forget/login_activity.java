@@ -7,7 +7,6 @@ import android.os.Bundle;
         import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.send_and_forget.http_service.HttpService;
-import org.json.JSONObject;
 
 public class login_activity extends AppCompatActivity {
 
@@ -61,7 +60,7 @@ public class login_activity extends AppCompatActivity {
 //            return;
 //        }
 
-        Intent intent = new Intent(login_activity.this, HomePage.class);
+        Intent intent = new Intent(login_activity.this, controller.class);
         intent.putExtra("username", username);
         System.out.println("before go ---------------");
         startActivity(intent);

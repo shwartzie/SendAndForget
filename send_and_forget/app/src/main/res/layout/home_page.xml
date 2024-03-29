@@ -49,7 +49,7 @@
                 android:padding="16dp">
 
             <EditText
-                    android:id="@+id/editTextMessage"
+                    android:id="@+id/prompt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Enter your message"
@@ -57,25 +57,36 @@
                     android:minLines="3"/>
 
             <EditText
-                    android:id="@+id/editTextTo"
+                    android:id="@+id/phone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="To"
                     android:inputType="phone"/>
 
-            <EditText
-                    android:id="@+id/editTextDate"
-                    android:layout_width="match_parent"
+            <DatePicker
+                    android:id="@+id/datePicker"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:hint="Select Date"
-                    android:inputType="date" />
+                    android:datePickerMode="spinner"
+                    android:layout_margin="0dp"
+            />
             <EditText
-                    android:id="@+id/editTextTime"
-                    android:layout_width="match_parent"
+                    android:id="@+id/time"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:hint="Select Time"
-                    android:inputType="time" />
-
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:focusableInTouchMode="false"
+            />
+            <Button
+                    android:id="@+id/pickDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select Date And Time"
+                    android:textColor="#ffffff"
+                    android:background="@color/black"
+                    android:layout_centerHorizontal="true"/>
         </LinearLayout>
     </ScrollView>
 
@@ -86,6 +97,8 @@
             android:layout_alignParentBottom="true"
             android:background="#333"
             android:padding="16dp">
+
+
 
         <Button
                 android:id="@+id/buttonSchedule"
