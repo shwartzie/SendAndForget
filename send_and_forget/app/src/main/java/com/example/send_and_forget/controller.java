@@ -16,6 +16,7 @@ import com.example.send_and_forget.http_service.HttpService;
 import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 public class controller extends AppCompatActivity {
     private TextView loggedUserName;
@@ -44,7 +45,7 @@ public class controller extends AppCompatActivity {
         Button scheduleBtn = findViewById(R.id.buttonSchedule);
         datePicker.setVisibility(View.GONE);
         time.setVisibility(View.GONE);
-        View pickDate = findViewById(R.id.pickDate);
+        Button pickDate = findViewById(R.id.pickDate);
 
         datePicker.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH), null);
@@ -79,6 +80,8 @@ public class controller extends AppCompatActivity {
                 schedules.addSchedule(requestBody);
                 System.out.println("schedules"+ schedules.getAllSchedules());
                 System.out.println(schedules.getScheduleById(1));
+                clean(prompt,phone,datePicker,time,pickDate,calendar);
+                runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Prompt has been scheduled successfully ", Toast.LENGTH_SHORT).show());
 //                HttpService.sendRequest("http://localhost:3030/schedule/", "POST", requestBody, new HttpService.HttpCallback() {
 //                    @Override
 //                    public void onSuccess(HttpService.HttpResponse response) throws JSONException {
@@ -138,7 +141,7 @@ public class controller extends AppCompatActivity {
 
     }
 
-    private void clean() {
+    private void clean(TextView prompt,TextView phone, DatePicker datePicker,TextView time, Button pickDate, Calendar calendar) {
         prompt.setText("");
         phone.setText("");
         datePicker.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), null);
@@ -146,8 +149,6 @@ public class controller extends AppCompatActivity {
         pickDate.setVisibility(View.VISIBLE);
         datePicker.setVisibility(View.GONE);
         time.setVisibility(View.GONE);
-
-
     }
     private void showTimePicker(Calendar calendar, TextView time) {
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
