@@ -30,8 +30,12 @@
                 android:label="Login Activity">
         </activity>
         <activity
-                android:name=".controller"
-                android:label="Login Activity">
+                android:name=".controller_view"
+                android:label="Controller Activity">
+
+        </activity>
+        <activity android:name=".schedules_view" android:label="Schedules Activity">
+
         </activity>
     </application>
 

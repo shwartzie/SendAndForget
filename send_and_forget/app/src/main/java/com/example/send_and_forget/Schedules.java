@@ -16,6 +16,8 @@ public class Schedules {
         Schedule getScheduleById(int id);
         boolean updateSchedule(int id, JSONObject scheduleJson);
         boolean deleteSchedule(int id);
+
+        Schedule getScheduleByIndex(int position);
     }
 
     public interface ScheduleInterface {
@@ -60,18 +62,22 @@ public class Schedules {
     // Method to retrieve a schedule by ID
     public JSONObject getScheduleById(int id) throws JSONException {
         for (Schedule schedule : scheduleList) {
-            System.out.println("ID" + id +" "+ schedule.id);
-//            scheduleList.
-//            if (schedule.getId() == id) {
-//                JSONObject foundSchedule = null;
-//                foundSchedule.put("prompt", schedule);
-//                foundSchedule.put("phone", schedule.phone);
-//                foundSchedule.put("date", schedule.date);
-//                foundSchedule.put("time", schedule.time);
-//                return foundSchedule;
-//            }
+            System.out.println("ID " + id +" "+ schedule.id);
+
+            if (schedule.id == id) {
+                JSONObject foundSchedule = new JSONObject();
+                foundSchedule.put("prompt", schedule.prompt);
+                foundSchedule.put("phone", schedule.phone);
+                foundSchedule.put("date", schedule.date);
+                foundSchedule.put("time", schedule.time);
+                return foundSchedule;
+            }
         }
         return null; // Schedule not found
+    }
+
+    public Schedule getScheduleByIndex (int position) {
+        return scheduleList.get(position);
     }
 
     // Method to update a schedule

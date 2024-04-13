@@ -23,14 +23,15 @@
             android:padding="10dp">
 
         <TextView
-                android:id="@+id/navItemPrompts"
+                android:id="@+id/promptsLink"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Prompts"
                 android:textColor="#ffffff"
                 android:textSize="18sp"
                 android:padding="8dp"
-                android:clickable="true"/>
+                android:clickable="true"
+        />
 
         <!-- Add more navigation items as needed -->
 

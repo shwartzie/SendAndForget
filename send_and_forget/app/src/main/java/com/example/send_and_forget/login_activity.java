@@ -1,10 +1,10 @@
 package com.example.send_and_forget;
 import android.content.Intent;
 import android.os.Bundle;
-        import android.view.View;
-        import android.widget.Button;
-        import android.widget.EditText;
-        import android.widget.Toast;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.send_and_forget.http_service.HttpService;
 
@@ -60,7 +60,7 @@ public class login_activity extends AppCompatActivity {
 //            return;
 //        }
 
-        Intent intent = new Intent(login_activity.this, controller.class);
+        Intent intent = new Intent(login_activity.this, controller_view.class);
         intent.putExtra("username", username);
         System.out.println("before go ---------------");
         startActivity(intent);

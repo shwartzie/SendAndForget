@@ -12,13 +12,10 @@ import android.widget.TimePicker;
 import java.util.Calendar;
 import java.util.Date;
 
-import com.example.send_and_forget.http_service.HttpService;
 import android.widget.Toast;
-import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
-public class controller extends AppCompatActivity {
+public class controller_view extends AppCompatActivity {
     private TextView loggedUserName;
     private  TextView prompt;
     private DatePicker datePicker;
@@ -46,9 +43,21 @@ public class controller extends AppCompatActivity {
         datePicker.setVisibility(View.GONE);
         time.setVisibility(View.GONE);
         Button pickDate = findViewById(R.id.pickDate);
+        TextView promptsLink = findViewById(R.id.promptsLink);
 
+        promptsLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(controller_view.this, schedules_view.class);
+                System.out.println("before go SCHEDULES");
+                //intent.putExtra("username", username);
+                startActivity(intent);
+                finish();
+            }
+        });
         datePicker.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH), null);
+
 
         pickDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,7 +88,7 @@ public class controller extends AppCompatActivity {
                 requestBody.put("id", Integer.parseInt("1"));
                 schedules.addSchedule(requestBody);
                 System.out.println("schedules"+ schedules.getAllSchedules());
-                System.out.println(schedules.getScheduleById(1));
+                System.out.println("getScheduleById "+ schedules.getScheduleById(1));
                 clean(prompt,phone,datePicker,time,pickDate,calendar);
                 runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Prompt has been scheduled successfully ", Toast.LENGTH_SHORT).show());
 //                HttpService.sendRequest("http://localhost:3030/schedule/", "POST", requestBody, new HttpService.HttpCallback() {
@@ -140,7 +149,13 @@ public class controller extends AppCompatActivity {
 
 
     }
-
+    public void onBackPressed() {
+        Intent intent = new Intent(this, login_activity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
+        super.onBackPressed();
+    }
     private void clean(TextView prompt,TextView phone, DatePicker datePicker,TextView time, Button pickDate, Calendar calendar) {
         prompt.setText("");
         phone.setText("");
@@ -154,7 +169,7 @@ public class controller extends AppCompatActivity {
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
 
-        TimePickerDialog timePickerDialog = new TimePickerDialog(controller.this,
+        TimePickerDialog timePickerDialog = new TimePickerDialog(controller_view.this,
                 new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
