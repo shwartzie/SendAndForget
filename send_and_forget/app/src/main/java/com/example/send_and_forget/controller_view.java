@@ -9,10 +9,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.app.TimePickerDialog;
 import android.widget.TimePicker;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.Locale;
 
 import android.widget.Toast;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class controller_view extends AppCompatActivity {
@@ -24,6 +30,59 @@ public class controller_view extends AppCompatActivity {
     private  Button scheduleBtn;
     private TextView time;
     private Button pickDate;
+
+    public void init() throws ParseException {
+
+        Intent intent = getIntent();
+
+        if (intent != null) {
+            String intentPrompt = intent.getStringExtra("prompt");
+            String intentPhone = intent.getStringExtra("phone");
+            String intentTime = intent.getStringExtra("time");
+            String intentDatePicker = intent.getStringExtra("datePicker");
+            if (intentDatePicker == null) {
+                return;
+            }
+
+            Calendar calendar = Calendar.getInstance();
+            TextView prompt = findViewById(R.id.prompt);
+            TextView phone = findViewById(R.id.phone);
+            DatePicker datePicker = (DatePicker) findViewById(R.id.datePicker); // initiate a date picker
+            TextView time = findViewById(R.id.time);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
+            Button pickDate = findViewById(R.id.pickDate);
+
+            prompt.setText(intentPrompt);
+            phone.setText(intentPhone);
+            showTimePicker(calendar, time, true);
+            System.out.println("UPDATING UI DATA " + intentPrompt + " " + intentPhone + " " + intentTime + " " + intentDatePicker);
+            pickDate.setVisibility(View.GONE);
+            try {
+                Date date;
+                date = dateFormat.parse(intentDatePicker);
+                calendar.setTime(date);
+
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+                datePicker.init(year, month, day, null);
+                time.setVisibility(View.VISIBLE);
+
+            } catch (Exception e) {
+                throw e;
+            }
+        }
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        System.out.println("onResume");
+        try {
+            init();
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,7 +93,7 @@ public class controller_view extends AppCompatActivity {
         loggedUserName.setText(username);
 
         TextView prompt = findViewById(R.id.prompt);
-        TextView phone =  findViewById(R.id.phone);
+        TextView phone = findViewById(R.id.phone);
         DatePicker datePicker = (DatePicker) findViewById(R.id.datePicker); // initiate a date picker
         datePicker.setSpinnersShown(false); // set false value for the spinner shown function
         TextView time = findViewById(R.id.time);
@@ -44,6 +103,7 @@ public class controller_view extends AppCompatActivity {
         time.setVisibility(View.GONE);
         Button pickDate = findViewById(R.id.pickDate);
         TextView promptsLink = findViewById(R.id.promptsLink);
+
 
         promptsLink.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,25 +132,25 @@ public class controller_view extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 JSONObject requestBody = new JSONObject();
-            try {
-                int day = datePicker.getDayOfMonth();
-                int month = datePicker.getMonth() + 1;
-                int year = datePicker.getYear();
-                Date date = new Date(year, month, day);
+                try {
+                    int day = datePicker.getDayOfMonth();
+                    int month = datePicker.getMonth() + 1;
+                    int year = datePicker.getYear();
+                    Date date = new Date(year, month, day);
 
-                System.out.println("DATE "+date);
+                    System.out.println("DATE " + date);
 
-                requestBody.put("prompt", prompt.getText());
-                requestBody.put("phone", phone.getText());
-                requestBody.put("date", date);
-                requestBody.put("time", time.getText());
-                Schedules schedules = Schedules.getInstance();
-                requestBody.put("id", Integer.parseInt("1"));
-                schedules.addSchedule(requestBody);
-                System.out.println("schedules"+ schedules.getAllSchedules());
-                System.out.println("getScheduleById "+ schedules.getScheduleById(1));
-                clean(prompt,phone,datePicker,time,pickDate,calendar);
-                runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Prompt has been scheduled successfully ", Toast.LENGTH_SHORT).show());
+                    requestBody.put("prompt", prompt.getText());
+                    requestBody.put("phone", phone.getText());
+                    requestBody.put("date", date);
+                    requestBody.put("time", time.getText());
+                    Schedules schedules = Schedules.getInstance();
+                    requestBody.put("id", Integer.parseInt("1"));
+                    schedules.addSchedule(requestBody);
+                    System.out.println("schedules" + schedules.getAllSchedules());
+                    System.out.println("getScheduleById " + schedules.getScheduleById(1));
+                    clean(prompt, phone, datePicker, time, pickDate, calendar);
+                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Prompt has been scheduled successfully ", Toast.LENGTH_SHORT).show());
 //                HttpService.sendRequest("http://localhost:3030/schedule/", "POST", requestBody, new HttpService.HttpCallback() {
 //                    @Override
 //                    public void onSuccess(HttpService.HttpResponse response) throws JSONException {
@@ -111,12 +171,12 @@ public class controller_view extends AppCompatActivity {
 //                });
 
 
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("Exception"+e.getMessage());
-                // Handle JSON exception
-                return;
-            }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("Exception" + e.getMessage());
+                    // Handle JSON exception
+                    return;
+                }
 
 
             }
@@ -127,7 +187,7 @@ public class controller_view extends AppCompatActivity {
                 @Override
                 public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                     time.setVisibility(View.VISIBLE);
-                    showTimePicker(calendar,time);
+                    showTimePicker(calendar, time, false);
                 }
             });
         } else {
@@ -135,7 +195,7 @@ public class controller_view extends AppCompatActivity {
                     calendar.get(Calendar.DAY_OF_MONTH), new DatePicker.OnDateChangedListener() {
                         @Override
                         public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                            showTimePicker(calendar,time);
+                            showTimePicker(calendar, time, false);
                         }
                     });
         }
@@ -143,7 +203,7 @@ public class controller_view extends AppCompatActivity {
         time.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showTimePicker(calendar,time);
+                showTimePicker(calendar, time, false);
             }
         });
 
@@ -165,7 +225,7 @@ public class controller_view extends AppCompatActivity {
         datePicker.setVisibility(View.GONE);
         time.setVisibility(View.GONE);
     }
-    private void showTimePicker(Calendar calendar, TextView time) {
+    private void showTimePicker(Calendar calendar, TextView time, Boolean isHide) {
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
 
@@ -176,7 +236,9 @@ public class controller_view extends AppCompatActivity {
                         time.setText(hourOfDay + ":" + minute);
                     }
                 }, hour, minute, true);
-        timePickerDialog.show();
+        if (!isHide) {
+            timePickerDialog.show();
+        }
     }
 
 }
