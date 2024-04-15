@@ -1,6 +1,7 @@
 package com.example.send_and_forget;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.json.JSONException;
@@ -8,25 +9,33 @@ import org.json.JSONObject;
 
 public class Schedules {
     private static Schedules instance;
-    private List<Schedule> scheduleList;
+    private ArrayList<Schedule> scheduleList;
 
     public interface SchedulesController {
-        void addSchedule(JSONObject scheduleJson);
-        List<Schedule> getAllSchedules();
-        Schedule getScheduleById(int id);
-        boolean updateSchedule(int id, JSONObject scheduleJson);
-        boolean deleteSchedule(int id);
+        void set(String prompt, String phone, Date date, String time, Integer scheduleId);
 
-        Schedule getScheduleByIndex(int position);
+        ArrayList<Schedule> getAllSchedules();
+
+        Schedule getScheduleById(int id);
+
+        boolean update(int id, String prompt, String phone, Date date, String time);
+
+        boolean delete(int id);
+
     }
 
     public interface ScheduleInterface {
         int getId();
+
         String getPrompt();
+
         String getPhone();
+
         String getDate();
+
         String getTime();
     }
+
     public Schedules() {
         this.scheduleList = new ArrayList<>();
     }
@@ -37,18 +46,28 @@ public class Schedules {
         }
         return instance;
     }
+
     // Method to add a new schedule
-    public void addSchedule(JSONObject scheduleJson) {
+    public void set(String prompt, String phone, Date date, String time, Integer scheduleId) {
         try {
-            int id = scheduleJson.getInt("id");
-            String prompt = scheduleJson.getString("prompt");
-            String phone = scheduleJson.getString("phone");
-            String date = scheduleJson.getString("date");
-            String time = scheduleJson.getString("time");
+            if (scheduleId != null) {
+                update(scheduleId, prompt, phone, date, time);
+                return;
+            }
+            int lastId;
+            if (scheduleList.size() == 0) {
+                lastId = 100;
+            } else {
+                lastId = scheduleList.get(scheduleList.size() - 1).getId();
+            }
+            int id = lastId + 1;
+            System.out.println("last id " + lastId + " " + id);
+
             scheduleList.add(new Schedule(id, prompt, phone, date, time));
+//            System.out.println("scheduleList " + scheduleList.get(0).getDate() + " " + scheduleList.get(0).getDate().toString());
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Exception"+e.getMessage());
+            System.out.println("Exception" + e.getMessage());
             return;
         }
 
@@ -56,32 +75,22 @@ public class Schedules {
 
     // Method to retrieve all schedules
     public List<Schedule> getAllSchedules() {
-        return scheduleList;
+        return this.scheduleList;
     }
 
     // Method to retrieve a schedule by ID
-    public JSONObject getScheduleById(int id) throws JSONException {
-        for (Schedule schedule : scheduleList) {
-            System.out.println("ID " + id +" "+ schedule.id);
-
+    public Schedule getScheduleById(int id) {
+        for (Schedule schedule : this.scheduleList) {
             if (schedule.id == id) {
-                JSONObject foundSchedule = new JSONObject();
-                foundSchedule.put("prompt", schedule.prompt);
-                foundSchedule.put("phone", schedule.phone);
-                foundSchedule.put("date", schedule.date);
-                foundSchedule.put("time", schedule.time);
-                return foundSchedule;
+                return schedule;
             }
         }
-        return null; // Schedule not found
-    }
-
-    public Schedule getScheduleByIndex (int position) {
-        return scheduleList.get(position);
+        return null;
     }
 
     // Method to update a schedule
-    public boolean updateSchedule(int id, String prompt, String phone, String date, String time) {
+    public boolean update(int id, String prompt, String phone, Date date, String time) {
+        System.out.println("Updating.. " + id );
         for (Schedule schedule : scheduleList) {
             if (schedule.getId() == id) {
                 schedule.setPrompt(prompt);
@@ -95,10 +104,12 @@ public class Schedules {
     }
 
     // Method to delete a schedule by ID
-    public boolean deleteSchedule(int id) {
+    public boolean delete(int id) {
+        System.out.println("Removing.. " + id);
         for (Schedule schedule : scheduleList) {
             if (schedule.getId() == id) {
-                scheduleList.remove(schedule);
+                System.out.println("found.. " + id);
+                this.scheduleList.remove(schedule);
                 return true; // Schedule deleted successfully
             }
         }
@@ -109,10 +120,10 @@ public class Schedules {
         private int id;
         private String prompt;
         private String phone;
-        private String date;
+        private Date date;
         private String time;
 
-        public Schedule(int id, String prompt, String phone, String date, String time) {
+        public Schedule(int id, String prompt, String phone, Date date, String time) {
             this.id = id;
             this.prompt = prompt;
             this.phone = phone;
@@ -145,11 +156,11 @@ public class Schedules {
             this.phone = phone;
         }
 
-        public String getDate() {
+        public Date getDate() {
             return date;
         }
 
-        public void setDate(String date) {
+        public void setDate(Date date) {
             this.date = date;
         }
 

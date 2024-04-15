@@ -1,4 +1,5 @@
 package com.example.send_and_forget;
+
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -18,32 +19,36 @@ import java.util.Iterator;
 import java.util.Locale;
 
 import android.widget.Toast;
+import com.example.send_and_forget.Schedules.ScheduleInterface;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class controller_view extends AppCompatActivity {
     private TextView loggedUserName;
-    private  TextView prompt;
+    private TextView prompt;
     private DatePicker datePicker;
     private Calendar calendar;
-    private  TextView phone;
-    private  Button scheduleBtn;
+    private TextView phone;
+    private Button scheduleBtn;
     private TextView time;
     private Button pickDate;
-
+    private Integer scheduleId;
+private Button removeSchedule;
+    //    private ScheduleInterface schedule;
     public void init() throws ParseException {
 
         Intent intent = getIntent();
 
         if (intent != null) {
             String intentPrompt = intent.getStringExtra("prompt");
+
+            if (intentPrompt == null) {
+                return;
+            }
             String intentPhone = intent.getStringExtra("phone");
             String intentTime = intent.getStringExtra("time");
             String intentDatePicker = intent.getStringExtra("datePicker");
-            if (intentDatePicker == null) {
-                return;
-            }
-
+            this.scheduleId = intent.getIntExtra("id", 0);
             Calendar calendar = Calendar.getInstance();
             TextView prompt = findViewById(R.id.prompt);
             TextView phone = findViewById(R.id.phone);
@@ -51,12 +56,18 @@ public class controller_view extends AppCompatActivity {
             TextView time = findViewById(R.id.time);
             SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
             Button pickDate = findViewById(R.id.pickDate);
-
+            Button scheduleBtn = findViewById(R.id.buttonSchedule);
+            Button removeSchedule = findViewById(R.id.removeSchedule);
             prompt.setText(intentPrompt);
             phone.setText(intentPhone);
             showTimePicker(calendar, time, true);
-            System.out.println("UPDATING UI DATA " + intentPrompt + " " + intentPhone + " " + intentTime + " " + intentDatePicker);
+//            System.out.println("UPDATING UI DATA " + intentPrompt + " " + intentPhone + " " + intentTime + " " + intentDatePicker);
             pickDate.setVisibility(View.GONE);
+            datePicker.setVisibility(View.VISIBLE);
+            time.setVisibility(View.VISIBLE);
+            time.setText(intentTime);
+            scheduleBtn.setText("Update");
+            removeSchedule.setVisibility(View.VISIBLE);
             try {
                 Date date;
                 date = dateFormat.parse(intentDatePicker);
@@ -66,13 +77,12 @@ public class controller_view extends AppCompatActivity {
                 int month = calendar.get(Calendar.MONTH);
                 int day = calendar.get(Calendar.DAY_OF_MONTH);
                 datePicker.init(year, month, day, null);
-                time.setVisibility(View.VISIBLE);
-
             } catch (Exception e) {
                 throw e;
             }
         }
     }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -83,6 +93,7 @@ public class controller_view extends AppCompatActivity {
             throw new RuntimeException(e);
         }
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,8 +101,9 @@ public class controller_view extends AppCompatActivity {
         loggedUserName = findViewById(R.id.loggedUserName);
         Intent intent = getIntent();
         String username = intent.getStringExtra("username");
-        loggedUserName.setText(username);
-
+        loggedUserName.setText("Welcome, " + username);
+        Button removeSchedule = findViewById(R.id.removeSchedule);
+        removeSchedule.setVisibility(View.GONE);
         TextView prompt = findViewById(R.id.prompt);
         TextView phone = findViewById(R.id.phone);
         DatePicker datePicker = (DatePicker) findViewById(R.id.datePicker); // initiate a date picker
@@ -103,7 +115,7 @@ public class controller_view extends AppCompatActivity {
         time.setVisibility(View.GONE);
         Button pickDate = findViewById(R.id.pickDate);
         TextView promptsLink = findViewById(R.id.promptsLink);
-
+        datePicker.setMinDate(calendar.getTimeInMillis());
 
         promptsLink.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -128,28 +140,32 @@ public class controller_view extends AppCompatActivity {
             }
         });
 
+        removeSchedule.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Schedules schedules = Schedules.getInstance();
+                schedules.delete(scheduleId);
+                clean(prompt, phone, datePicker, time, pickDate, calendar, scheduleBtn,removeSchedule);
+                runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Prompt has been removed successfully ", Toast.LENGTH_SHORT).show());
+            }
+        });
         scheduleBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                JSONObject requestBody = new JSONObject();
+//                JSONObject requestBody = new JSONObject();
+//                String buttonText = scheduleBtn.getText().toString();
+//                if (buttonText.toLowerCase() == "update") {
+//
+//                }
+
                 try {
                     int day = datePicker.getDayOfMonth();
                     int month = datePicker.getMonth() + 1;
                     int year = datePicker.getYear();
                     Date date = new Date(year, month, day);
-
-                    System.out.println("DATE " + date);
-
-                    requestBody.put("prompt", prompt.getText());
-                    requestBody.put("phone", phone.getText());
-                    requestBody.put("date", date);
-                    requestBody.put("time", time.getText());
                     Schedules schedules = Schedules.getInstance();
-                    requestBody.put("id", Integer.parseInt("1"));
-                    schedules.addSchedule(requestBody);
-                    System.out.println("schedules" + schedules.getAllSchedules());
-                    System.out.println("getScheduleById " + schedules.getScheduleById(1));
-                    clean(prompt, phone, datePicker, time, pickDate, calendar);
+                    schedules.set(prompt.getText().toString(), phone.getText().toString(), date, time.getText().toString(), scheduleId);
+                    clean(prompt, phone, datePicker, time, pickDate, calendar, scheduleBtn,removeSchedule);
                     runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Prompt has been scheduled successfully ", Toast.LENGTH_SHORT).show());
 //                HttpService.sendRequest("http://localhost:3030/schedule/", "POST", requestBody, new HttpService.HttpCallback() {
 //                    @Override
@@ -209,6 +225,7 @@ public class controller_view extends AppCompatActivity {
 
 
     }
+
     public void onBackPressed() {
         Intent intent = new Intent(this, login_activity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -216,7 +233,8 @@ public class controller_view extends AppCompatActivity {
         finish();
         super.onBackPressed();
     }
-    private void clean(TextView prompt,TextView phone, DatePicker datePicker,TextView time, Button pickDate, Calendar calendar) {
+
+    private void clean(TextView prompt, TextView phone, DatePicker datePicker, TextView time, Button pickDate, Calendar calendar, Button scheduleBtn, Button removeSchedule) {
         prompt.setText("");
         phone.setText("");
         datePicker.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), null);
@@ -224,7 +242,10 @@ public class controller_view extends AppCompatActivity {
         pickDate.setVisibility(View.VISIBLE);
         datePicker.setVisibility(View.GONE);
         time.setVisibility(View.GONE);
+        scheduleBtn.setText("Schedule");
+        removeSchedule.setVisibility(View.GONE);
     }
+
     private void showTimePicker(Calendar calendar, TextView time, Boolean isHide) {
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);

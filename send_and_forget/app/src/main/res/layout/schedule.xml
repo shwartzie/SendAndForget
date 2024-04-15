@@ -14,19 +14,26 @@
             android:padding="16dp">
 
         <TextView
-                android:id="@+id/titleTextView"
+                android:id="@+id/date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:text="Card Title" />
+                android:text="Scheduled At" />
+        <TextView
+                android:id="@+id/phone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:text="To" />
 
         <TextView
-                android:id="@+id/descriptionTextView"
+                android:id="@+id/prompt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
-                android:text="Card Description" />
+                android:text="Prompt" />
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>
