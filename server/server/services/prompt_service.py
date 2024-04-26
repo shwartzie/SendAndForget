@@ -19,8 +19,13 @@ class Execution:
         print('User: %s' % self.user)
         try:
             messenger = Messenger(service)
+<<<<<<< HEAD
             isOk = messenger.send_message(self.reciepentData, self.user)
             if not isOk:
+=======
+            is_ok = messenger.send_message(self.reciepentData, self.user)
+            if not is_ok:
+>>>>>>> a6b0615 (continued working on sending sms)
                 raise Exception('Send Message failed')
 
         except Exception as error:
@@ -33,7 +38,11 @@ class Execution:
         # next = self.get_next()
         # if (next):
         #     self.execute(Execution())
+<<<<<<< HEAD
         return isOk
+=======
+        return
+>>>>>>> a6b0615 (continued working on sending sms)
 
     def get_next(self):
         current_date = datetime.date.today()
