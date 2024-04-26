@@ -5,5 +5,5 @@ def login(request):
     return HttpResponse('login')
 
 def register(request):
-    print(request.body)
+    print('body',request)
     return HttpResponse('register')
