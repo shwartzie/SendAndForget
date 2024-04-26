@@ -21,7 +21,8 @@ class Prompt(models.Model):
     execution_time = models.TimeField(null=False, default=timezone.now)
     updated = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
-
+    completed = models.BooleanField(default=False)
+    
     def __str__(self):
         return self.prompt
 
