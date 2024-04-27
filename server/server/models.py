@@ -28,16 +28,16 @@ class Prompt(models.Model):
 
 
 class UserPrompt(models.Model):
-    user_id = models.OneToOneField(
+    user = models.OneToOneField(
         User, on_delete=models.CASCADE, null=True, unique=True)
-    prompt_id = models.OneToOneField(
+    prompt = models.OneToOneField(
         Prompt, on_delete=models.CASCADE, null=True, unique=True)
 
     def save(self, *args, **kwargs):
-        if self.user_id_id is None or self.prompt_id_id is None:
+        if self.user_id is None or self.prompt_id is None:
             raise ValueError(
                 "Both user_id and prompt_id must be set before saving.")
         return super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"User: {self.user}, Prompt: {self.prompt}"
+        return f"User: {self.user_id}, Prompt: {self.prompt_id}"

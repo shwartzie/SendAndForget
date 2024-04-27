@@ -27,6 +27,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+SMS_BACKEND = 'django_sms.backends.twilio.TwilioSMSBackend'
+TWILIO_ACCOUNT_SID = 'your_twilio_account_sid'
+TWILIO_AUTH_TOKEN = 'your_twilio_auth_token'
+TWILIO_DEFAULT_FROM_PHONE_NUMBER = 'your_twilio_phone_number'
 
 # Application definition
 
@@ -39,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sessions',
     'server',
+    'phonenumbers'
 ]
 
 INTERNAL_IPS = [
